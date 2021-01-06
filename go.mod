@@ -1,4 +1,4 @@
-module github.com/johandry/klient
+module github.com/fyuan1316/klient
 
 go 1.14
 
