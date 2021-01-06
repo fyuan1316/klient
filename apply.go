@@ -12,7 +12,8 @@ import (
 
 // Apply creates a resource with the given content
 func (c *Client) Apply(content []byte) error {
-	r := c.ResultForContent(content, nil)
+	opt := BuilderOptions{Validate: false, Unstructured: true}
+	r := c.ResultForContent(content, &opt)
 	return c.ApplyResource(r)
 }
 

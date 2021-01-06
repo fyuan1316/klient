@@ -16,7 +16,8 @@ const (
 
 // Delete creates a resource with the given content
 func (c *Client) Delete(content []byte) error {
-	r := c.ResultForContent(content, nil)
+	opt := BuilderOptions{Validate: false, Unstructured: true}
+	r := c.ResultForContent(content, &opt)
 	return c.DeleteResource(r)
 }
 
