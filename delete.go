@@ -1,6 +1,7 @@
 package klient
 
 import (
+	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/cli-runtime/pkg/resource"
@@ -34,7 +35,7 @@ func (c *Client) DeleteResource(r *resource.Result) error {
 }
 
 func delete(info *resource.Info, err error) error {
-	if err != nil {
+	if err != nil && !errors.IsNotFound(err) {
 		return failedTo("delete", info, err)
 	}
 
@@ -45,7 +46,7 @@ func delete(info *resource.Info, err error) error {
 		PropagationPolicy: &policy,
 	}
 
-	if _, err := deleteWithOptions(info, &options); err != nil {
+	if _, err := deleteWithOptions(info, &options); err != nil && !errors.IsNotFound(err) {
 		return failedTo("delete", info, err)
 	}
 	return nil

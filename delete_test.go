@@ -43,7 +43,7 @@ func TestClient_Delete(t *testing.T) {
 			},
 			true,
 			envContext, envKubeconfig,
-			true,
+			false,
 		},
 	}
 	for _, tt := range tests {
