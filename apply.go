@@ -37,6 +37,8 @@ func (c *Client) ApplyResource(r *resource.Result) error {
 	return r.Visit(apply)
 }
 
+var ChartReleaseRevisionKey = "asm.revision"
+
 func apply(info *resource.Info, err error) error {
 	if err != nil {
 		return failedTo("apply", info, err)
@@ -53,9 +55,25 @@ func apply(info *resource.Info, err error) error {
 		}
 		return create(info, nil)
 	}
-
+	needPatch := true
+	if obj, ok := current.(metav1.Object); ok {
+		labels := obj.GetLabels()
+		if cV, cExists := labels[ChartReleaseRevisionKey]; cExists {
+			if newObj, ok := info.Object.(metav1.Object); ok {
+				newLabels := newObj.GetLabels()
+				if nV, nExists := newLabels[ChartReleaseRevisionKey]; nExists {
+					if cV == nV {
+						needPatch = false
+					}
+				}
+			}
+		}
+	}
 	// If exists, patch it
-	return patch(info, current)
+	if needPatch {
+		return patch(info, current)
+	}
+	return nil
 }
 
 func serverSideApply(info *resource.Info, err error) error {
